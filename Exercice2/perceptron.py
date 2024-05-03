@@ -10,7 +10,7 @@ from typing import List, Tuple
 class Perceptron(ABC):
     def __init__(self, learning_rate, weights, bias, input_data_dimension, epsilon):
         # If no weights provided, initialize with random values; otherwise, use provided weights
-        if (weights is None or len(weights) == 0):
+        if weights is None or len(weights) == 0:
             self.weights = np.random.rand(input_data_dimension + 1)  # Include bias term (w_0)
         else:
             self.weights = weights
@@ -65,7 +65,7 @@ class Perceptron(ABC):
         input_len = len(input_data)  # Number of training samples
 
         # If scaling is enabled, normalize expected outputs
-        if (scale):
+        if scale:
             expected = [self.scale_result(value, min(expected), max(expected)) for value in expected]
             expected_test = [self.scale_result(value, min(expected_test), max(expected_test)) for value in
                              expected_test]
