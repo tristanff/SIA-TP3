@@ -1,0 +1,16 @@
+Perceptron Type,Error Threshold,Average Epochs
+Linear,0.05,10000.0
+Hyperbolic,0.05,15.55
+Logistic,0.05,2.21
+Linear,0.04,10000.0
+Hyperbolic,0.04,49.52
+Logistic,0.04,6.54
+Linear,0.03,10000.0
+Hyperbolic,0.03,92.47
+Logistic,0.03,17.11
+Linear,0.02,10000.0
+Hyperbolic,0.02,9602.19
+Logistic,0.02,224.94
+Linear,0.01,10000.0
+Hyperbolic,0.01,9750.73
+Logistic,0.01,8938.98
