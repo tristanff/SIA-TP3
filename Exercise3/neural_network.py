@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-import json
 
 class NeuralNetwork:
     def __init__(self, layer_sizes, one_hot=False, activation_function='sigmoid', optimizer='gradient'):
@@ -46,10 +45,9 @@ class NeuralNetwork:
 
     def one_hot_encoding(self, y):
         """Encode digit to one-hot (used in error calculation of backpropagation)"""
-        y = y.reshape(-1, len(y))
+        y = y.reshape(len(y), -1)
         encoded_y = np.zeros((y.size, y.max() + 1))
         encoded_y[np.arange(y.size), y.flatten()] = 1
-        encoded_y = encoded_y.T
         return encoded_y
 
     def feedforward(self, x):
@@ -141,7 +139,7 @@ class NeuralNetwork:
         prediction = self.feedforward(x)
         if self.layer_sizes[-1] == 1:
             return (prediction > 0.5).astype(int)
-        return self.output[np.argmax(prediction, axis=1)]
+        return np.unique(self.output)[np.argmax(prediction, axis=1)]
 
     def graph(self, graph_type, name=None, xlim=None):
         """Graph information about neural network performance"""
