@@ -192,7 +192,7 @@ class NeuralNetwork:
             ax1.set_title('Confusion matrix')
             ax1.set_xlabel('Predicted digit')
             ax1.set_ylabel('Real digit')
-            ax1.set_xticks(np.arange(len(self.input)))
-            ax1.set_yticks(np.arange(len(self.input)))
+            ax1.set_xticks(np.arange(len(np.unique(self.output))))
+            ax1.set_yticks(np.arange(len(np.unique(self.output))))
             fig.colorbar(im, ax=ax1)
             fig.savefig(f'./graphs/confusion_{name}', dpi=300);
