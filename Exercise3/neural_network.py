@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 
 class NeuralNetwork:
-    def __init__(self, layer_sizes, one_hot=False, activation_function='sigmoid', optimizer='adam'):
+    def __init__(self, layer_sizes, one_hot=False, activation_function='sigmoid', optimizer='gradient'):
         # Initialize number of nodes of input, hidden, and output layer
         self.layer_sizes = layer_sizes
         self.num_layers = len(layer_sizes)
@@ -15,13 +15,20 @@ class NeuralNetwork:
         # Activation function
         self.activation_function = activation_function
 
-        # Optimizer setting
-        self.optimizer = optimizer
-
         # Initialize weights (w) and biases (b)
         self.weights = [np.random.rand(layer_sizes[i], layer_sizes[i+1]) for i in range(self.num_layers - 1)]
         self.biases = [np.zeros((1, layer_sizes[i+1])) for i in range(self.num_layers - 1)]
+
+        # Optimizer setting
+        self.optimizer = optimizer
         
+        # Adam optimizer parameters
+        self.beta1 = 0.9
+        self.beta2 = 0.999
+        self.epsilon = 1e-8
+        self.m = [np.zeros_like(w) for w in self.weights]
+        self.v = [np.zeros_like(w) for w in self.weights]
+        self.t = 0     
         # Record data
         self.losses = []
 
@@ -39,7 +46,7 @@ class NeuralNetwork:
 
     def one_hot_encoding(self, y):
         """Encode digit to one-hot (used in error calculation of backpropagation)"""
-        y = y.reshape(-1, 10)
+        y = y.reshape(-1, len(y))
         encoded_y = np.zeros((y.size, y.max() + 1))
         encoded_y[np.arange(y.size), y.flatten()] = 1
         encoded_y = encoded_y.T
@@ -57,7 +64,42 @@ class NeuralNetwork:
         return a
 
     def backpropagation(self, x, y, learning_rate):
-        """Backpropagation"""
+        """Backpropagation with chosen optimizer"""
+        if self.optimizer == 'adam':
+            self.adam_optimizer(x, y, learning_rate)
+        else:
+            self.gradient_optimizer(x, y, learning_rate)
+    
+    def adam_optimizer(self, x, y, learning_rate):
+        """Backpropagation with Adam optimizer"""
+        m = y.size
+        self.t += 1
+        
+        # Ensure initialization of m and v
+        if self.t == 1:
+            self.m = [np.zeros_like(w) for w in self.weights]
+            self.v = [np.zeros_like(w) for w in self.weights]
+        
+        # Backward pass
+        d_z = self.activations[-1] - y
+        for i in range(len(self.weights) - 1, -1, -1):
+            d_w = np.dot(self.activations[i].T, d_z) / m
+            d_b = np.sum(d_z) / m
+            
+            self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * d_w
+            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (d_w ** 2)
+            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
+            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
+            
+            # Update weights and biases
+            self.weights[i] -= learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)
+            self.biases[i] -= learning_rate * d_b
+    
+            if i > 0:
+                d_z = np.dot(d_z, self.weights[i].T) * self.activation(self.zs[i - 1], deriv=True)
+
+    def gradient_optimizer(self, x, y, learning_rate):
+        """Backpropagation with gradient descent"""
         m = y.size
     
         # Backward pass
@@ -72,7 +114,7 @@ class NeuralNetwork:
             if i > 0:
                 d_z = np.dot(d_z, self.weights[i].T) * self.activation(self.zs[i - 1], deriv=True)
 
-    def train(self, x, y, learning_rate, epochs):
+    def train(self, x, y, learning_rate, epochs, verbose=False):
         """Optimize weight and bias parameters"""
         self.input = x
         self.output = y
@@ -91,7 +133,7 @@ class NeuralNetwork:
             loss = np.mean(np.square(y - self.activations[-1]))
             self.losses.append(loss)
 
-            if not epoch % (epochs / 10):
+            if verbose and not epoch % (epochs / 10):
                 print(f'Epoch {epoch}: {loss}')
 
     def predict(self, x):
@@ -120,6 +162,7 @@ class NeuralNetwork:
             f'Hidden nodes: {self.layer_sizes[1:-1]}\n'
             f'Output nodes: {self.layer_sizes[-1]}\n'
             f'Learning rate: {self.learning_rate}\n'
+            f'Activation function: {self.activation_function}\n'
             f'Epochs: {self.epochs}'
         )
         fig, (ax1, ax2) = plt.subplots(1, 2, gridspec_kw={'width_ratios': [8, 2]}, figsize=(8.5, 4.8))
