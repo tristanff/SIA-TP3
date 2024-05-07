@@ -42,7 +42,7 @@ def run_experiments_with_betas(filename):
         for _ in range(num_iterations):
             linear_perceptron = LinealPerceptron(learning_rate, [], bias, input_size, error_threshold)
             epochs, train_errors, test_errors = linear_perceptron.train(
-                training_data, testing_data, expected_data[:split_index], expected_data[split_index:], max_epochs
+                training_data, testing_data, expected_data[:split_index], expected_data[split_index:], max_epochs,scale=True
             )
             mse = (np.array(train_errors) + np.array(test_errors)) / 2
             all_mse.append(mse)
@@ -65,7 +65,7 @@ def run_experiments_with_betas(filename):
         for _ in range(num_iterations):
             hiperbolic_perceptron = HiperbolicPerceptron(beta, learning_rate, [], bias, input_size, error_threshold)
             epochs, train_errors, test_errors = hiperbolic_perceptron.train(
-                training_data, testing_data, expected_data[:split_index], expected_data[split_index:], max_epochs
+                training_data, testing_data, expected_data[:split_index], expected_data[split_index:], max_epochs,scale=False
             )
             mse = (np.array(train_errors) + np.array(test_errors)) / 2
             all_mse.append(mse)
@@ -88,7 +88,7 @@ def run_experiments_with_betas(filename):
         for _ in range(num_iterations):
             logistic_perceptron = LogisticPerceptron(beta, learning_rate, [], bias, input_size, error_threshold)
             epochs, train_errors, test_errors = logistic_perceptron.train(
-                training_data, testing_data, expected_data[:split_index], expected_data[split_index:], max_epochs
+                training_data, testing_data, expected_data[:split_index], expected_data[split_index:], max_epochs,scale=False
             )
             mse = (np.array(train_errors) + np.array(test_errors)) / 2
             all_mse.append(mse)

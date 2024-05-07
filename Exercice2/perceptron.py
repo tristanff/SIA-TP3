@@ -14,7 +14,6 @@ class Perceptron(ABC):
             self.weights = np.random.rand(input_data_dimension + 1)  # Include bias term (w_0)
         else:
             self.weights = weights
-
         # Store other parameters used for training and computation
         self.learning_rate = learning_rate
         self.bias = bias
