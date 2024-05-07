@@ -8,9 +8,9 @@ def salt_pepper_noise(img, salt_probability, pepper_probability):
     img_copy[pepper] = 0
     return img_copy
 
-def random_noise(img):
+def random_noise(img, factor):
     img_copy = np.copy(img)
-    img_copy = img_copy + np.random.rand(*img_copy.shape)
+    img_copy = img_copy + (np.random.rand(*img_copy.shape)/10)*factor
     return img_copy
 
 def gaussian_noise(img, mean, std):

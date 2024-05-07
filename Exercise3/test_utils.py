@@ -1,7 +1,7 @@
 import numpy as np
 from noise_utils import salt_pepper_noise, random_noise, gaussian_noise
 
-def generate_test_dataset(num_values, data_source, noise_type=None, salt_probability=0.1, pepper_probability=0.1, mean=0, std=0.1):
+def generate_test_dataset(num_values, data_source, noise_type=None, salt_probability=0.1, pepper_probability=0.1, mean=0, std=0.1, factor=10):
     dataX = []
     dataY = []
     
@@ -12,7 +12,7 @@ def generate_test_dataset(num_values, data_source, noise_type=None, salt_probabi
         if noise_type == 'salt_pepper':
             digit_img = salt_pepper_noise(digit_img, salt_probability, pepper_probability)
         elif noise_type == 'random':
-            digit_img = random_noise(digit_img)
+            digit_img = random_noise(digit_img, factor)
         elif noise_type == 'gauss':
             digit_img = gaussian_noise(digit_img, mean, std)           
         
